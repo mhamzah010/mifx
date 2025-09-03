@@ -34,7 +34,6 @@ deploy:
   needs: ["build"]
   rules:
     - changes:
-        - Dockerfile
         - docker-compose.yml
         - docker-compose.db.yml
         - ansible/**
