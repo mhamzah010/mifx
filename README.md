@@ -8,6 +8,7 @@ This repository contains a working baseline for the test:
 - **GitLab CI** with *build* and *deploy* jobs depending on file changes
 - **Security hardening** for Nginx/PHP
 - **Log rotation** scripts in Bash and Python
+- **Answer** of case scenario
 
 ## Quickstart
 

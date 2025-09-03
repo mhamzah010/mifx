@@ -24,9 +24,8 @@ COPY docker/nginx/nginx.conf /etc/nginx/nginx.conf
 COPY docker/nginx/default.conf /etc/nginx/conf.d/default.conf
 COPY docker/php/security.ini /etc/php81/conf.d/zz-security.ini
 COPY docker/php/www.conf /etc/php81/php-fpm.d/www.conf
-COPY app /var/www
 COPY docker/php/logging.conf /etc/php81/php-fpm.d/logging.conf
-
+COPY app /var/www
 
 # Switch to non-root
 USER web

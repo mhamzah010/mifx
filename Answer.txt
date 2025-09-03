@@ -1,0 +1,30 @@
+Quiz: 
+1. Fix broken snippet
+Problem: malformed stages list and missing image for Trivy. Fixed with:
+stages:
+    - unittest
+    - security_scan
+
+security_scan:
+    stage: security_scan
+    image: aquasec/trivy:latest
+    script:
+        - trivy repo ./
+
+2. Database Analysyis
+For troubleshoot this case, kindly to use this scenario:
+- Confirm schema: if affiliates live in a separate table, query that table: SELECT COUNT(*) FROM affiliates WHERE client_id = ?.
+- Add index: CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_affiliates_client_id ON affiliates (client_id);
+- Use EXPLAIN (ANALYZE, BUFFERS) to ensure index usage.
+- For JSON/array storage, index appropriately (e.g., GIN for JSONB) and compute cardinality properly.
+- Consider caching/materialized view for hot paths.
+
+3. Scripting
+Set -e causes the script to exit immediately if any command returns a non-zero status.
+
+Use scripts/logrotate.sh:
+./scripts/logrotate.sh /path/to/logs ./logrotate.log
+
+Python
+Same logic in scripts/logrotate.py:
+python3 scripts/logrotate.py /path/to/logs ./logrotate.log 5
