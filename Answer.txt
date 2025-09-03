@@ -29,9 +29,3 @@ WHERE client_id = 'this_is_client_id' AND affiliates IS NOT NULL;
 3. Scripting
 Set -e causes the script to exit immediately if any command returns a non-zero status.
 
-Use scripts/logrotate.sh:
-./scripts/logrotate.sh /path/to/logs ./logrotate.log
-
-Python
-Same logic in scripts/logrotate.py:
-python3 scripts/logrotate.py /path/to/logs ./logrotate.log 5
