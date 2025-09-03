@@ -17,6 +17,6 @@ This repository contains a working baseline for the test:
 docker compose up -d --build
 
 # Or with DB
-docker compose -f docker-compose.db.yml up -d --build
+docker compose -f docker-compose-db.yml up -d --build
 
 # Visit http://localhost:8080
