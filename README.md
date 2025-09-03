@@ -92,6 +92,7 @@ If size > 5 MB → archive with gzip timestamp, truncate original, log action wi
 Python script (scripts/logrotate.py):
 Same logic as Bash version.
 
+
 ## Quickstart
 ```bash
 # Build and run locally (web only)
@@ -101,3 +102,7 @@ docker compose up -d --build
 docker compose -f docker-compose-db.yml up -d --build
 
 # Visit http://localhost:8080
+
+# Run Script logrotate
+./scripts/logrotate.sh /path/to/logs ./logrotate.log
+python3 scripts/logrotate.py /path/to/logs ./logrotate.log 5
