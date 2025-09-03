@@ -11,6 +11,7 @@ This repository contains a working baseline for the test:
 - **Answer** of case scenario
 
 Details Techincal Test summary
+
 A. Web Server Hardening (Nginx + PHP-FPM)
 
 Nginx:
