@@ -12,12 +12,19 @@ security_scan:
         - trivy repo ./
 
 2. Database Analysyis
-For troubleshoot this case, kindly to use this scenario:
-- Confirm schema: if affiliates live in a separate table, query that table: SELECT COUNT(*) FROM affiliates WHERE client_id = ?.
-- Add index: CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_affiliates_client_id ON affiliates (client_id);
-- Use EXPLAIN (ANALYZE, BUFFERS) to ensure index usage.
-- For JSON/array storage, index appropriately (e.g., GIN for JSONB) and compute cardinality properly.
-- Consider caching/materialized view for hot paths.
+As seen from schema databases and symtopms of case, this query perform full table scan because:
+
+1. No index for client_id
+2. The count non-Null affiliates values for those rows
+
+Because of that as quick call action kindly to use add Index on client_id and optimize query structure:
+-- If counting rows with specific client_id:
+SELECT COUNT(*) FROM client WHERE client_id = 'this_is_client_id';
+
+-- If counting non-null affiliates for specific client_id:
+SELECT COUNT(affiliates) FROM client 
+WHERE client_id = 'this_is_client_id' AND affiliates IS NOT NULL;
+
 
 3. Scripting
 Set -e causes the script to exit immediately if any command returns a non-zero status.
