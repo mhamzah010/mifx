@@ -61,7 +61,7 @@ docker-compose.yml:
 D. Ansible Deployment
 
 Inventory (hosts.ini):
-Holds host IP, SSH key, Docker Hub username, and encrypted password via Ansible Vault.
+Holds host IP, SSH key, Docker Hub username, and password.
 
 Playbook:
 1. Copies docker-compose.yml to /opt/sre on target server.
