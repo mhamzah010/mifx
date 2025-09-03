@@ -1,0 +1,33 @@
+---
+- name: Deploy docker compose stack (force update)
+  hosts: servers
+  gather_facts: false
+  vars:
+    deploy_dir: /home/ubuntu/sre
+    compose_file: docker-compose.yml
+  tasks:
+    - name: Ensure deploy dir exists
+      ansible.builtin.file:
+        path: "{{ deploy_dir }}"
+        state: directory
+        mode: "0755"
+
+    - name: Copy compose file
+      ansible.builtin.copy:
+        src: "{{ compose_file }}"
+        dest: "{{ deploy_dir }}/docker-compose.yml"
+        mode: "0644"
+
+    - name: Login to Docker Hub
+      ansible.builtin.shell: |
+        echo "{{ lookup('env','DOCKERHUB_PASSWORD') }}" | docker login -u "{{ lookup('env','DOCKERHUB_USERNAME') }}" --password-stdin
+      args:
+        executable: /bin/sh
+
+    - name: Pull & recreate services
+      ansible.builtin.shell: |
+        cd {{ deploy_dir }}
+        docker compose pull
+        docker compose up -d --force-recreate
+      args:
+        executable: /bin/sh

@@ -1,0 +1,57 @@
+stages:
+  - build
+  - deploy
+  - security_scan
+
+variables:
+  IMAGE_NAME: "${DOCKERHUB_USERNAME}/selfprojects"
+
+build:
+  image: docker:24.0.5
+  services:
+    - docker:24.0.5-dind
+  stage: build
+  rules:
+    - changes:
+        - Dockerfile
+        - docker/**
+        - app/**
+  script:
+    - echo "$DOCKERHUB_PASSWORD" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+    - docker build -t "${IMAGE_NAME}:${CI_COMMIT_SHORT_SHA}" .
+    - docker tag "${IMAGE_NAME}:${CI_COMMIT_SHORT_SHA}" "${IMAGE_NAME}:latest"
+    - docker push "${IMAGE_NAME}:${CI_COMMIT_SHORT_SHA}"
+    - docker push "${IMAGE_NAME}:latest"
+  artifacts:
+    reports:
+      dotenv: build.env
+  after_script:
+    - echo "TAG=${CI_COMMIT_SHORT_SHA}" >> build.env
+
+deploy:
+  image: alpine:3.18
+  stage: deploy
+  needs: ["build"]
+  rules:
+    - changes:
+        - Dockerfile
+        - docker-compose.yml
+        - docker-compose.db.yml
+        - ansible/**
+  before_script:
+    - apk add --no-cache openssh-client
+    - eval $(ssh-agent -s)
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    - mkdir -p ~/.ssh && chmod 700 ~/.ssh
+    - echo "$DEPLOY_HOST_KEY" >> ~/.ssh/known_hosts
+  script:
+    - scp -o StrictHostKeyChecking=no docker-compose.db.yml ${DEPLOY_USER}@${DEPLOY_HOST}:/opt/sre/docker-compose.yml
+    - ssh ${DEPLOY_USER}@${DEPLOY_HOST} "cd /opt/sre && echo \"$DOCKERHUB_PASSWORD\" | docker login -u \"$DOCKERHUB_USERNAME\" --password-stdin && TAG=${CI_COMMIT_SHORT_SHA} docker compose pull && TAG=${CI_COMMIT_SHORT_SHA} docker compose up -d --force-recreate"
+
+security_scan:
+  image: aquasec/trivy:latest
+  stage: security_scan
+  rules:
+    - when: always
+  script:
+    - trivy repo --no-progress ./

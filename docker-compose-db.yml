@@ -1,0 +1,28 @@
+version: "3.9"
+services:
+  web:
+    build: .
+    image: ${DOCKERHUB_USERNAME:-mhamzah010}/selfprojects:${TAG:-projectmifx}
+    depends_on:
+      - db
+    environment:
+      - DATABASE_URL=postgresql://appuser:${APPUSER_PASSWORD:-app_pass}@db:5432/sre
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+
+  db:
+    image: postgres:16
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres_pass}
+      - POSTGRES_DB=postgres
+    ports:
+      - "5432:5432"
+    command: ["-c", "max_connections=300"]
+    volumes:
+      - dbdata:/var/lib/postgresql/data
+      - ./db/init:/docker-entrypoint-initdb.d:ro
+
+volumes:
+  dbdata:
