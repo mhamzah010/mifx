@@ -1,4 +1,5 @@
-FROM alpine:3.18
+#Real on use alpine:3.18
+FROM alpine:latest
 
 # Install Nginx, PHP 8.1 (FPM) and other extensions
 RUN apk add --no-cache \
