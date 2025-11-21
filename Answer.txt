@@ -1,0 +1,31 @@
+Quiz: 
+1. Fix broken snippet
+Problem: malformed stages list and missing image for Trivy. Fixed with:
+stages:
+    - unittest
+    - security_scan
+
+security_scan:
+    stage: security_scan
+    image: aquasec/trivy:latest
+    script:
+        - trivy repo ./
+
+2. Database Analysyis
+As seen from schema databases and symtopms of case, this query perform full table scan because:
+
+1. No index for client_id
+2. The count non-Null affiliates values for those rows
+
+Because of that as quick call action kindly to use add Index on client_id and optimize query structure:
+-- If counting rows with specific client_id:
+SELECT COUNT(*) FROM client WHERE client_id = 'this_is_client_id';
+
+-- If counting non-null affiliates for specific client_id:
+SELECT COUNT(affiliates) FROM client 
+WHERE client_id = 'this_is_client_id' AND affiliates IS NOT NULL;
+
+
+3. Scripting
+Set -e causes the script to exit immediately if any command returns a non-zero status.
+

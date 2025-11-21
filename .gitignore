@@ -1,0 +1,18 @@
+# dependencies
+node_modules/
+vendor/
+
+# build
+dist/
+build/
+
+# python
+__pycache__/
+
+# docker
+.docker/
+docker-compose.override.yml
+
+# misc
+.env
+*.log
